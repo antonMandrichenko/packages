@@ -1,5 +1,6 @@
 import * as React from "react";
+import { Routes } from "./routes";
 
 export default function App() {
-  return <h1>Hello, world27!</h1>;
+  return <Routes />;
 }
