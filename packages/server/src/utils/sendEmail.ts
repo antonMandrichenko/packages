@@ -1,22 +1,31 @@
-import * as SparkPost from "sparkpost";
-const client = new SparkPost(process.env.SPARKPOST_API_KEY);
+import * as nodemailer from "nodemailer";
 
 export const sendEmail = async (recipient: string, url: string) => {
-  const response = await client.transmissions.send({
-    options: {
-      sandbox: true
+  const testAccount = await nodemailer.createTestAccount();
+
+  const transporter = nodemailer.createTransport({
+    host: "smtp.ethereal.email",
+    port: 587,
+    secure: false,
+    auth: {
+      user: testAccount.user, 
+      pass: testAccount.pass 
     },
-    content: {
-      from: "testing@sparkpostbox.com",
-      subject: "Confirm Email",
-      html: `<html>
-        <body>
-        <p>Testing SparkPost - the world's most awesomest email service!</p>
-        <a href="${url}">confirm email</a>
-        </body>
-        </html>`
-    },
-    recipients: [{ address: recipient }]
   });
-  console.log(response);
+
+  const info = await transporter.sendMail({
+    from: '"Anton 👻" <lost@example.com>',
+    to: recipient,
+    subject: "Confirm email ✔",
+    html: `<html>
+    <body>
+    <p>Testing SparkPost - the world's most awesomest email service!</p>
+    <a href="${url}">confirm email</a>
+    </body>
+    </html>`,
+  });
+
+  console.log("Message sent: %s", info.messageId);
+
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
 };
